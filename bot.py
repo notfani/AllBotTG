@@ -335,10 +335,17 @@ def main() -> None:
     me = bot.get_me()
     BOT_ID = me.id
     log.info("Бот запущен: @%s, база %s", me.username, DB_PATH)
-    bot.infinity_polling(
-        skip_pending=True,
-        allowed_updates=["message", "chat_member", "my_chat_member"],
-    )
+    while True:
+        try:
+            bot.infinity_polling(
+                skip_pending=True,
+                timeout=30,
+                long_polling_timeout=20,
+                allowed_updates=["message", "chat_member", "my_chat_member"],
+            )
+        except Exception as exc:
+            log.warning("Polling прерван (%s), перезапуск через 5 секунд", exc)
+            time.sleep(5)
 
 
 if __name__ == "__main__":
